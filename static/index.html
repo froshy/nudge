@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>nudge</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 480px; margin: 3rem auto; padding: 0 1rem; }
+    label { display: block; margin-top: 1rem; font-size: 0.9rem; }
+    input { width: 100%; padding: 0.5rem; box-sizing: border-box; font-family: monospace; }
+    button { margin-top: 1rem; padding: 0.5rem 1rem; }
+    pre { background: #f4f4f4; padding: 1rem; overflow-x: auto; min-height: 3rem; }
+  </style>
+</head>
+<body>
+  <h1>nudge</h1>
+
+  <form id="creds">
+    <label for="key-id">Alpaca API key ID</label>
+    <input id="key-id" name="key_id" type="text" autocomplete="off" required>
+
+    <label for="secret">Alpaca secret key</label>
+    <input id="secret" name="secret" type="password" autocomplete="off" required>
+
+    <button type="submit">Connect</button>
+  </form>
+
+  <h2>Response</h2>
+  <pre id="output">Nothing yet.</pre>
+
+  <script>
+    const form = document.getElementById("creds");
+    const output = document.getElementById("output");
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      output.textContent = "Connecting...";
+
+      const body = {
+        key_id: form.key_id.value,
+        secret: form.secret.value,
+      };
+
+      try {
+        // This route doesn't exist yet; the Rust server will provide it.
+        const res = await fetch("/api/account", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        output.textContent = await res.text();
+      } catch (err) {
+        output.textContent = "Request failed: " + err;
+      }
+    });
+  </script>
+</body>
+</html>
